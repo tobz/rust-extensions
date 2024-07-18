@@ -94,13 +94,15 @@ pub async fn connect(
         .connect_with_connector(tower::service_fn(move |_| {
             #[cfg(unix)]
             {
-                tokio::net::UnixStream::connect(path.clone())
+                let connect = tokio::net::UnixStream::connect(path.clone());
+                async move { connect.await.map(hyper_util::rt::TokioIo::new) }
             }
 
             #[cfg(windows)]
             {
                 let client = tokio::net::windows::named_pipe::ClientOptions::new()
                     .open(path.clone())
+                    .map(hyper_util::rt::TokioIo::new)
                     .map_err(|e| std::io::Error::from(e));
                 async move { client }
             }

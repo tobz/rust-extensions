@@ -23,6 +23,7 @@ name = "version"
 path = "examples/version.rs"
 
 [dependencies]
+hyper-util = "0.1"
 prost.workspace = true
 prost-types.workspace = true
 tokio = { workspace = true, optional = true }
